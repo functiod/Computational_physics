@@ -29,7 +29,8 @@ def choose_step(start: float, end: float) -> bool:
         result = False
     return result
 
-def dihotomy(start: float, end: float) -> float:
+def dihotomy(start: float, end: float) -> tuple:
+    iter: int = 0
     result: float = 1.0
     start_1: float = start
     end_1: float = end
@@ -41,44 +42,63 @@ def dihotomy(start: float, end: float) -> float:
             start_1 = (start_1 + end_1) / 2
             end_1 = end_1
         result = f(end_1)
-    return end_1
+        iter += 1
+    return end_1, f(end_1), iter
 
 # ______________________________SECOND PART_______________________________
 
 def iter_f(x: float) -> float:
     # return np.sqrt((x + x*x)) * np.tan(1+x)
-    return 1 / (pow(np.tan(1 + x), 2) - 1)
+    return x + f(x)
 
 def deriv__iter_f(x: float) -> float:
     # return np.sqrt((x + x*x)) / (1 + pow((1 + x), 2)) + np.tan(1 +x )*(1 + 2*x) / (2 * np.sqrt((x + x*x)))
-    return 2 * np.tan(1 + x) / ((1 + pow(1 + x, 2)) * pow(pow(np.tan(1 + x), 2) - 1, 2))
+    return 1 - deriv_f(x)
 
 def converge_f(x: float) -> float:
     result_f: float
-    if deriv__iter_f(x) > 1:
+    if abs(deriv__iter_f(x)) > 1:
         result_f = 1/iter_f(x)
     else:
         result_f = iter_f(x)
     return result_f
 
-def iteration(x: float) -> float:
+def iteration_1(x: float) -> tuple:
     x_next: float
     x_cur: float = x
+    iter: int = 0
     while True:
-        x_next = converge_f(x_cur)
+        iter += 1
+        x_next = iter_f(x_cur)
         if abs(x_next - x_cur) <= eps or abs(f(x_next)) <= eps:
-            return x_cur, x_next, f(x_next)
+            return x_cur, x_next, f(x_next), iter
         x_cur = x_next
+
+def iteration_2(x: float) -> tuple:
+    x_next: float
+    x_cur: float = x
+    iter: int = 0
+    while iter < 1000:
+        iter += 1
+        x_next = converge_f(x_cur)
+        x_cur = x_next
+        if abs(f(x_next)) <= eps:
+            return x_cur, x_next, f(x_next), iter, 'hello'
+    return x_next, f(x_next), iter
 
 # ______________________________THIRD PART_______________________________
 
 def newtone_method(x_start: float) -> tuple:
     x_cur: float = x_start
     x_next: float
+    iter: int = 0
+    deriv_list: list = []
     while abs(f(x_cur)) >= eps:
+        deriv_list.append(deriv_f(x_cur))
+        iter += 1
         x_next = x_cur - f(x_cur) / deriv_f(x_cur)
         x_cur = x_next
-    return x_cur, f(x_cur)
+    return x_cur, f(x_cur), iter
 
 # ______________________________VISUAL PART_______________________________
 
@@ -124,10 +144,9 @@ if __name__ == "__main__":
     start: float = -7.0
     end: float = -5.0
     # plot_func()
-    print(newtone_method(-7.0))
     if solution_exist(start, end):
-        print("Xo =", dihotomy(start, end))
-        print("f(Xo) =", f(dihotomy(start, end)))
+        print('dihotomy', dihotomy(start, end))
     else:
         print('choose another values')
-    print(iteration(-6.4))
+    print("newtone_method:", newtone_method(-7.0))
+    print("simple iteration:", iteration_1(-3.0))

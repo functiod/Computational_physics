@@ -55,8 +55,7 @@ if __name__ == "__main__":
     # print(find_max_degree(find_number_digit(find_eps_64())))
     # print("digits_number_64: ", find_number_digit(find_eps_64()))
     # print("comparing_64:", compare(find_eps_64()))
-    eps: float = find_eps_64()
-    print(1.0 + eps + eps/2, 1.0 + eps/2 + eps)
     # print(1.0 + eps/2 + eps)
     # print(eps, eps/2, eps/4)
     # print(min_max_value(find_number_digit(find_eps_64())))
+    # Начальное приближение
